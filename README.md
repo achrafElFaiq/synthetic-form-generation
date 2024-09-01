@@ -149,4 +149,3 @@ Special thanks to Brian Davis, Bryan Morse, Bryan Price, Chris Tensmeyer, Curtis
 - **Achraf El Faiq**
 - **Jade Manuel**
 - **Tom Poget**
-```
