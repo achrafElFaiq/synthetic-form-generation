@@ -1,68 +1,89 @@
 # GenForm
 
-Ce projet est conçu pour générer des formulaires synthétiques destinés à l'entraînement et au test de modèles d'apprentissage automatique. Les formulaires synthétiques imitent les formulaires réels avec des en-têtes, des champs de texte et des données aléatoires. Ce README fournit des instructions sur la configuration et l'utilisation du générateur de formulaires synthétiques.
+This project is designed to generate synthetic forms intended for training and testing machine learning models. The synthetic forms mimic real forms with headers, text fields, and random data. This README provides instructions on how to set up and use the synthetic form generator.
 
-## Prérequis
+## Prerequisites
 
-Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre machine :
-- Python 3.6 ou supérieur
-
+Before you start, make sure you have the following installed on your machine:
+- Python 3.6 or higher
 
 ## Installation
 
-1. **Cloner le dépôt :**
-   git clone <url-du-dépôt>
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
+
+2. **Install the required packages:**
+
+   - PyTorch:
+   ```bash
+   python3 -m pip install torch
+   ```
+
+   - Scikit-Image:
+   ```bash
+   python3 -m pip install scikit-image
+   ```
+
+   - Transformers:
+   ```bash
+   python3 -m pip install transformers
+   ```
+
+   - Datasets:
+   ```bash
+   python3 -m pip install datasets
+   ```
+
+   - Matplotlib:
+   ```bash
+   python3 -m pip install matplotlib
+   ```
+
+   - Wget:
+   ```bash
+   python3 -m pip install wget
+   ```
+
+3. **Retrieve Fonts**
+
+   This can be done in several ways:
+   - **Manually:** Download fonts, move them to `data/fonts`, run:
+     ```bash
+     ls data/fonts > data/fonts/fonts.list
+     ```
+     then use `clean_fonts.py` to clean up the fonts;
+
+   - **Using the scrape.sh script:** This script retrieves free fonts for commercial use from the 1001fonts.com website:
+     ```bash
+     bash synthetic_text_gen/scrape.sh
+     ```
+     You may need to filter out unreadable fonts if this script is used;
+
+   - **Automating the cleaning of unreadable fonts (requires Tesseract):**
+     ```bash
+     pip install pytesseract
+     pip install editdistance
+     bash synthetic_text_gen/scrape_clean.sh
+     ```
+
+4. **Generate `gpt2_form_generation.json` using GPT-2:**
+
+   - Use the `gpt_form.py` script to generate the `gpt2_form_generation.json` file.
    
-
-2. **Installer les packages requis :**
-
-   - PyTorch ```bash python3 pip install torch```
-
-   - Scikit-Image ```bash python3 pip install scikit-image```
-
-   - Transformers ```bash python3 pip install transformers```
-
-   - Datasets ```bash python3 pip install datasets```
-
-   - Matplotlib ```bash python3 install matplotlib```
-
-   - Wget ```bash python3 install wget```
-
-
-3. **Récupérer des polices d'écriture**
-
-   Peut être fait :
-   - Soit manuellement : Récupérer des polices d'écritures, les déplacer dans data/fonts, utiliser ```bash ls data/fonts > data/fonts/fonts.list``` puis clean_fonts.py ;
-
-   - Soit en utilisant le script scrape.sh qui récupère des les polices libres pour une utilisation commerciale du site 1001fonts.com :
-   ```bash
-   bash synthetic_text_gen/scrape.sh
-   ```
-   Il peut être nécessaire de trier certaines polices trop illisibles si ce script est utilisé ;
-
-   - Soit, pour automatiser le nettoyage des polices illisibles (nécessite Tesseract) :
-   ```bash
-   pip install pytesseract
-   pip install editdistance
-   bash synthetic_text_gen/scrape_clean.sh
-   ```
-
-4. **Générer `gpt2_form_generation.json` en utilisant GPT-2 :**
-
-   - Utilisez le script `gpt_form.py` pour générer le fichier `gpt2_form_generation.json`.
-
-   - Placez le fichier généré dans le répertoire `data` :
+   - Move the generated file to the `data` directory:
      ```bash
      mv gpt2_form_generation.json ./data/gpt2_form_generation.json
      ```
 
+## Directory Structure
 
-Structure du Répertoire
-
-Assurez-vous que votre répertoire de projet est structuré comme suit :
+Ensure your project directory is structured as follows:
 
 ```
-<répertoire-du-dépôt>/
+<repository-directory>/
 ├── data/
 │   ├── fonts/
 │   │   └── clean-fonts.csv
@@ -74,53 +95,58 @@ Assurez-vous que votre répertoire de projet est structuré comme suit :
 └── README.md
 ```
 
+## Running the Generator
 
-## Exécution du Générateur :
+Run the synthetic form generation script to generate the forms and save them in the specified directory:
 
-Exécutez le script de génération de formulaires synthétiques pour générer les formulaires et les enregistrer dans le répertoire spécifié :
 ```bash
-python genForm.py [Nombre d'échantillons à générer : 100] [Ecrire les images sur le disque : True] [Ecrire les images dont un json ne peut pas être généré : False] [dossier de données : ./data] [Utiliser des masques : True]
-
+python genForm.py [Number of samples to generate: 100] [Save images to disk: True] [Save images without a corresponding JSON: False] [Data directory: ./data] [Use masks: True]
 ```
 
-Note: Assurez-vous que les chemins dans la configuration sont correctement définis selon la structure de votre répertoire de projet
+Note: Ensure that the paths in the configuration are correctly defined according to your project directory structure.
 
+## Configuration Parameters
 
-## Paramètres de configuration
+Using the "config" parameter in the constructor of the `SynthFormDataset` class (in `genForm.py`), you can modify the generated forms.
 
-Grâce au paramètre "config" que prend le constructeur de la class SynthFormDataset (dans genForm.py) il est possible de modifier les formulaires générés.
+- `'image_size'`: Default none — Image size.
+- `'min_text_height'`: Default 8 — Minimum text size.
+- `'max_text_height'`: Default 32 — Maximum text size.
+- `'tables'`: Default 0.2 — Probability of adding a table to the form.
+- `'augmentation'`: Default none — No effect.
+- `'augment_shade'`: Default 1 — Add contrast/brightness distortions.
+- `'additional_aug_params'`: Default {} — Other distortion parameters.
+- `'batch_size'`: Not used (neutralized).
+- `'questions'`: Default 1 — Number of question/answer pairs. Forced to 1 if `do_masks` is enabled.
+- `'do_masks'`: Default 1 — Whether to use masks or not.
+- `'max_qa_len_in'`: Default none — Maximum length of questions.
+- `'max_qa_len_out'`: Default none — Maximum length of answers.
+- `'max_qa_len'`: Replaces `max_qa_len_in` and `max_qa_len_out` if they are not defined.
+- `'cased'`: Default True — Allow capitalization for questions/answers.
+- `'color'`: Default False — Allow color in generated images (not implemented).
+- `'rotation'`: Unused.
+- `'crop_params'`: Default none — Parameters for transformations of the generated image.
+- `'rescale_range'`: Scaling interval if the value is not explicitly given.
+- `'rescale_to_crop_size_first'`: Default False — Explicit.
+- `'rescale_to_crop_width_first'`: Default False — Explicit.
+- `'rescale_to_crop_height_first'`: Default False — Explicit.
+- `'cache_resized_images'`: Default False — Cache resized images.
+- `'crop_to_q'`: Default False — Unused with this dataset.
+- `'words'`: Default True — ?
+- `'use_json'`: Default False — Level of use of the GPT-2 JSON. Options: False, 'test', 'only', 'fine-tune', 'streamlined', 'readtoo', 'readmore', or 'readevenmore'.
+- `'shorten_text_in_json'`: Default False — Explicit.
+- `'max_q_tokens'`: Default 20 — Max token length for questions.
+- `'max_a_tokens'`: Default 800 — Max token length for answers.
 
-'image_size'											default none		// Taille de l'image
-'min_text_height'						 			default 8  			// Taille minimale du texte
-'max_text_height'						 			default 32 			// Taille maximale du texte
-'tables' 													default 0.2 		// Probabilité d'ajout d'un tableau dans le formulaire
-'augmentation' 										default none		// Aucun effet
-'augment_shade' 									default 1 			// Ajouter des distorsions de contraste/luminosité
-'additional_aug_params'						default {}			// Autres paramètres de distorsion
-'batch_size'		  						    						    // Inutile (neutralisé)
-'questions'												default 1				// Nombre de paires question/réponse. Forcé à 1 si do_masks
-'do_masks'												default 1				// Utiliser des masques ou non.
-'max_qa_len_in' 									default = none 	// Longueur maximum des questions
-'max_qa_len_out' 									default = none 	// Longueur maximum des réponses
-'max_qa_len'											    						// Remplace les max_qa_len_in et max_qa_len_out s'ils ne sont pas définis
-'cased'														default True		// Autoriser la capitalisation pour les questions/réponses
-'color'														default False		// Autoriser la couleur dans les images générées (pas implémenté)
-'rotation'																				// Inutilisé
-'crop_params'											default none		// Paramètres des transformations de l'image générée
-'rescale_range'																		// Intervalle de redimensionnement si la valeur n'est pas donnée explicitement
-'rescale_to_crop_size_first'			default False		// Explicite
-'rescale_to_crop_width_first'			default False		// Explicite
-'rescale_to_crop_height_first'		default False		// Explicite
-'cache_resized_images'						default False		// Mettre les images redimensionnées en cache
-'crop_to_q'												default False		// Inutilisé avec ce dataset
-'words'														default True		// ?
-'use_json'												default False		// Niveau d'utilisation du json GPT-2. False, 'test', 'only', 'fine-tune', 'streamlined', 'readtoo', 'readmore' or 'readevenmore'
-'shorten_text_in_json'						default False		// Explicite
-'max_q_tokens'										default 20			// Longueur max des tokens pour les questions
-'max_a_tokens'										default 800			// Longueur max des tokens pour les réponses
+Other parameters are unused.
 
-Autre paramètres inutilisés.
+## Credits
 
-## Crédits
+Special thanks to Brian Davis, Bryan Morse, Bryan Price, Chris Tensmeyer, Curtis Wigington, and Vlad Morariu for Dessurt (https://github.com/herobd/dessurt) and SyntheticTextGen (https://github.com/herobd/synthetic_text_gen/tree/master), from which this tool is a direct adaptation.
 
-Nous remercions MM. Brian Davis, Bryan Morse, Bryan Price, Chris Tensmeyer, Curtis Wigington et Vlad Morariu pour Dessurt (https://github.com/herobd/dessurt) et SyntheticTextGen (https://github.com/herobd/synthetic_text_gen/tree/master) dont cet outil est une adaptation directe.
+## Contributors
+
+- **Achraf El Faiq**
+- **Jade Manuel**
+- **Tom Poget**
+```
